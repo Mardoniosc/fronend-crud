@@ -1,0 +1,13 @@
+<div class="wrapper fadeInDown">
+  <div id="formContent">
+    <div class="fadeIn first">
+      <i class="pi pi-user" style="font-size: 100px;"></i>
+    </div>
+
+    <form [formGroup]="form">
+      <input type="text" id="email" name="email" formControlName="email" placeholder="Usuário">
+      <input type="password" id="senha" name="senha" formControlName="senha" placeholder="Senha">
+      <input type="button" [disabled]="form.invalid" (click)="logar()" class="btn btn-primary mt-3" value="Logar">
+    </form>
+  </div>
+</div>

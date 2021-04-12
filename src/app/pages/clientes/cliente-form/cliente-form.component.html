@@ -1,0 +1,166 @@
+<nav class="mb-5">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a routerLink="/">Home</a></li>
+    <li class="breadcrumb-item"><a routerLink="/clientes">Clientes</a></li>
+    <li class="breadcrumb-item active">{{ pageTitle }}</li>
+  </ol>
+</nav>
+
+<div class="row mb-4">
+  <div class="col-md">
+    <h1 class="h2 border-left pl-2">{{ pageTitle }}</h1>
+  </div>
+  <div class="col-md">
+    <a routerLink="/clientes" class="btn btn-light float-right">
+      << Voltar </a>
+  </div>
+</div>
+
+<form [formGroup]="clienteForm" (submit)="submitForm()">
+  <div class="card">
+    <div class="card-header">Informações sobre o cliente</div>
+    <div class="card-body">
+      <div class="form-row">
+
+        <div class="form-group col-md-8">
+          <label for="nome">Nome *</label>
+          <input type="text" class="form-control" id="nome" formControlName="nome" />
+          <div class="text-danger" *ngIf="clienteForm.get('nome').invalid && clienteForm.get('nome').touched">
+            <div *ngIf="clienteForm.get('nome').errors.required">Preenchimento Obrigatório</div>
+            <div *ngIf="clienteForm.get('nome').errors.minlength">Deve ter no mínimo 3 caracteres e no máximo 100</div>
+          </div>
+        </div>
+
+        <div class="form-group col-md-4">
+          <label for="cpf">CPF *</label>
+          <input type="text" class="form-control" id="cpf" formControlName="cpf" mask="000.000.000-00" />
+          <div class="text-danger" *ngIf="clienteForm.get('cpf').invalid && clienteForm.get('cpf').touched">
+            <div *ngIf="clienteForm.get('cpf').errors.required">Preenchimento Obrigatório</div>
+          </div>
+        </div>
+        <div formArrayName="telefones" *ngFor="let item of clienteForm.get('telefones')['controls']; let i = index">
+          <div class="form-group col-md-12">
+            <ng-container>
+              <label for="fone">Telefone {{i + 1}}* </label>
+              <button type="button" class="btn-primary rounded-circle ml-2" *ngIf="i == 0"
+                (click)="addTelefone('')">+</button>
+              <button type="button" class="btn-danger rounded-circle ml-2" *ngIf="i != 0"
+                (click)="removeTelefone(i)">X</button>
+              <input type="text" class="form-control" id="fone" [formControlName]="i"
+                mask="(00) 0000-0000 || (00) 0 0000-0000" />
+              <div class="text-danger"
+                *ngIf="clienteForm.get('telefones').controls[i].invalid && clienteForm.get('telefones').touched">
+                <div *ngIf="clienteForm.get('telefones').controls[i].errors.required">Preenchimento Obrigatório</div>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+
+        <div formArrayName="emails" *ngFor="let item of clienteForm.get('emails')['controls']; let i = index">
+          <div class="form-group col-md-12">
+            <ng-container>
+              <label for="email">E-mail {{i + 1}}* </label>
+              <button type="button" class="btn-primary rounded-circle ml-2" *ngIf="i == 0"
+                (click)="addEmail('')">+</button>
+              <button type="button" class="btn-danger rounded-circle ml-2" *ngIf="i != 0"
+                (click)="removeEmail(i)">X</button>
+              <input type="text" class="form-control" id="email" [formControlName]="i" />
+              <div class="text-danger"
+                *ngIf="clienteForm.get('emails').controls[i].invalid && clienteForm.get('emails').touched">
+                <div *ngIf="clienteForm.get('emails').controls[i].errors.email">E-mail invalido</div>
+                <div *ngIf="clienteForm.get('emails').controls[i].errors.required">Preenchimento Obrigatório</div>
+              </div>
+            </ng-container>
+
+          </div>
+        </div>
+        <br />
+        <div class="form-group col-md-12"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card mt-5">
+    <div class="card-header">Endereço do cliente</div>
+    <div class="card-body">
+      <div formArrayName="enderecos" *ngFor="let end of clienteForm.get('enderecos')['controls']; let i = index">
+        <ng-container [formGroupName]="i">
+          <div class="form-row">
+            <div class="form-group col-md-3">
+              <label for="cep">CEP *</label>
+              <input type="text" class="form-control" id="cep" formControlName="cep" #cepDigitado
+                (keyup)="buscarCep(cepDigitado.value)" mask="00000-000" />
+              <div class="text-danger"
+                *ngIf="clienteForm.get('enderecos').controls[i].controls['cep'].invalid && clienteForm.get('enderecos').controls[i].controls['cep'].touched">
+                <div *ngIf="clienteForm.get('enderecos').controls[i].controls['cep'].errors.required">Preenchimento
+                  Obrigatório</div>
+              </div>
+            </div>
+
+            <div class="form-group col-md-7">
+              <label for="logradouro">Logradouro *</label>
+              <input type="text" class="form-control" id="logradouro" formControlName="logradouro" />
+              <div class="text-danger"
+                *ngIf="clienteForm.get('enderecos').controls[i].controls['logradouro'].invalid && clienteForm.get('enderecos').controls[i].controls['logradouro'].touched">
+                <div *ngIf="clienteForm.get('enderecos').controls[i].controls['logradouro'].errors.required">
+                  Preenchimento Obrigatório</div>
+              </div>
+            </div>
+
+            <div class="form-group col-md-2">
+              <label for="numero">Número *</label>
+              <input type="number" class="form-control" id="numero" formControlName="numero" />
+              <div class="text-danger"
+                *ngIf="clienteForm.get('enderecos').controls[i].controls['numero'].invalid && clienteForm.get('enderecos').controls[i].controls['numero'].touched">
+                <div *ngIf="clienteForm.get('enderecos').controls[i].controls['numero'].errors.required">Preenchimento
+                  Obrigatório</div>
+              </div>
+            </div>
+            <div class="form-group col-md-6">
+              <label for="bairro">Bairro *</label>
+              <input type="text" class="form-control" id="bairro" formControlName="bairro" />
+              <div class="text-danger"
+                *ngIf="clienteForm.get('enderecos').controls[i].controls['bairro'].invalid && clienteForm.get('enderecos').controls[i].controls['bairro'].touched">
+                <div *ngIf="clienteForm.get('enderecos').controls[i].controls['bairro'].errors.required">Preenchimento
+                  Obrigatório</div>
+              </div>
+            </div>
+            <div class="form-group col-md-6">
+              <label for="complemento">Complemento</label>
+              <input type="text" class="form-control" id="complemento" formControlName="complemento" />
+            </div>
+            <div class="form-group col-md-4">
+              <label for="cidade">Cidade *</label>
+              <input type="text" class="form-control" id="cidade" formControlName="cidade" />
+              <div class="text-danger"
+                *ngIf="clienteForm.get('enderecos').controls[i].controls['cidade'].invalid && clienteForm.get('enderecos').controls[i].controls['cidade'].touched">
+                <div *ngIf="clienteForm.get('enderecos').controls[i].controls['cidade'].errors.required">Preenchimento
+                  Obrigatório</div>
+              </div>
+            </div>
+            <div class="form-group col-md-1">
+              <label for="estado">Estado *</label>
+              <input type="text" class="form-control" id="estado" formControlName="estado" />
+              <div class="text-danger"
+                *ngIf="clienteForm.get('enderecos').controls[i].controls['estado'].invalid && clienteForm.get('enderecos').controls[i].controls['estado'].touched">
+                <div *ngIf="clienteForm.get('enderecos').controls[i].controls['estado'].errors.required">Preenchimento
+                  Obrigatório</div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+
+    </div>
+  </div>
+  <div class="alert alert-danger mt-4" *ngIf="serverErrorMessages">
+    <strong>Erro no Servidor</strong>
+    <ul>
+      <li *ngFor="let err of serverErrorMessages">{{ err }}</li>
+    </ul>
+  </div>
+  <button [disabled]="submittingForm || clienteForm.invalid" type="submit"
+    class="btn btn-primary btn-lg mt-3 mb-5 float-right">
+    Salvar
+  </button>
+</form>

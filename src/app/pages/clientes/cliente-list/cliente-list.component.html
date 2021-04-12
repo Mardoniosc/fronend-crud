@@ -1,0 +1,52 @@
+<nav class="mb-5">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a routerLink="/">Home</a></li>
+    <li class="breadcrumb-item active">Clientes</li>
+  </ol>
+</nav>
+
+<div class="row mb-4">
+  <div class="col-md">
+    <h1 class="h2 border-left pl-2">Clientes</h1>
+  </div>
+  <div class="col-md">
+    <a routerLink="new" class="btn btn-success float-right" *ngIf="perfil === 'ADMIN'">+ Novo Cliente</a>
+  </div>
+</div>
+
+<table class="table table-houver">
+  <thead>
+    <tr class="bg-primary text-light">
+      <th>Clientes</th>
+      <th>Endereço</th>
+      <th>Contatos</th>
+      <th>E-mails</th>
+      <th *ngIf="perfil === 'ADMIN'">Ações</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let cli of clientes">
+      <td>
+        <strong>{{ cli.nome }} </strong> <br />
+        <small>{{ cli.cpf | cpf }}</small>
+      </td>
+      <td>
+        <p *ngFor="let end of cli?.enderecos">
+          {{ end.logradouro }} {{ end.numero }} {{ end.complemento }} <br />
+          {{ end.bairro }}, {{ end.cep | cep }} <br />
+          <small>{{ end.cidade }} - {{ end.estado }}</small>
+        </p>
+      </td>
+      <td>
+        <small *ngFor="let fone of cli?.telefones">{{ fone | telefone }} <br /></small>
+      </td>
+      <td>
+        <small *ngFor="let email of cli.emails"> {{ email }} <br /> </small>
+      </td>
+      <td *ngIf="perfil === 'ADMIN'">
+        <a [routerLink]="[cli.id, 'edit']" class="btn btn-outline-info btn-sm mr-2">Editar</a>
+        <a class="btn btn-outline-danger btn-sm" (click)="deleteCliente(cli)">Excluir</a>
+      </td>
+    </tr>
+  </tbody>
+</table>
